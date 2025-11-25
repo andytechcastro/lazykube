@@ -16,11 +16,15 @@ func NewInput(stdinWriter io.Writer) *Input {
 	textArea.SetBackgroundColor(tcell.ColorGray)
 
 	textArea.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Key() == tcell.KeyEnter {
+		switch event.Key() {
+		case tcell.KeyEnter:
 			line := textArea.GetText()
 			// Escribir comando + salto de línea al pipe de stdin
 			_, _ = stdinWriter.Write([]byte(line + "\r"))
 			textArea.SetText("", true) // Limpiar campo de entrada
+			return nil
+		case tcell.KeyTab:
+			_, _ = stdinWriter.Write([]byte{'\t'})
 			return nil
 		}
 		return event
